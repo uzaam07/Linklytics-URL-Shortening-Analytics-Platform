@@ -2,6 +2,12 @@
 
 Linklytics is a Flask + SQLite + vanilla JavaScript URL shortener with a black monochrome dashboard. This version implements the core engineering roadmap: account authentication, workspace isolation, a forward-compatible schema migration path, automated tests, basic abuse prevention, bot-filtered analytics, date ranges, custom-domain DNS verification scaffolding, plan quotas, and deployment configuration.
 
+## 🚀 Live Demo
+
+**Try Linklytics here:** [Linklytics — URL Shortening & Analytics Platform](https://linklytics-url-shortening-analytics.onrender.com)
+
+Explore the application to experience its URL shortening, link management, and analytics features.
+
 ## Features
 
 ### Accounts and private workspaces
@@ -24,12 +30,6 @@ Linklytics is a Flask + SQLite + vanilla JavaScript URL shortener with a black m
 - Select 7, 30, or 90-day ranges from the dashboard.
 - Daily click trends, referrers, device category, top links, and an approximate unique-visitor count based on a keyed IP/User-Agent hash.
 - The visitor count is an estimate, not a verified count of people. Update/rotate `SECRET_KEY` to invalidate old fingerprints.
-
-### Plans and custom domains
-- Free-plan limits: 100 links and 10,000 non-bot tracked clicks per month. Redirects continue after the click tracking cap, but further clicks are not stored for free users.
-- Custom domains can be added and verified using a DNS TXT record at `_linklytics.<your-domain>` with the token shown in Settings.
-- After verification, generated short URLs use the first verified domain on that account. You must point DNS at the deployment and configure the reverse proxy/host routing for the domain.
-- Billing endpoints and a plan model are present, but **live checkout is not implemented**. Configure a payment provider, webhook signature verification, subscription lifecycle handling, and entitlement sync before taking payments. `ALLOW_DEMO_PLAN_UPGRADE=1` enables a local-only demo plan toggle and must not be enabled in production.
 
 ## Run locally on Windows
 
