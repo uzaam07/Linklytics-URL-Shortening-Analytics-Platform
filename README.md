@@ -1,14 +1,26 @@
-# Linklytics — Private Link Analytics SaaS MVP
+# 🔗 Linklytics — URL Shortening & Analytics Platform
 
-Linklytics is a Flask + SQLite + vanilla JavaScript URL shortener with a black monochrome dashboard. This version implements the core engineering roadmap: account authentication, workspace isolation, a forward-compatible schema migration path, automated tests, basic abuse prevention, bot-filtered analytics, date ranges, custom-domain DNS verification scaffolding, plan quotas, and deployment configuration.
+## 📖 Overview
+
+**Linklytics** is a web-based URL shortening and analytics platform developed using **Python, Flask, SQLite, HTML, CSS, and JavaScript**. The project provides a simple way to create, manage, and analyze shortened URLs through a modern dashboard.
+
+The application allows users to register, sign in, create shortened links, customize URL aliases, manage existing links, and track click activity. It also includes analytics features such as daily click trends, referrer information, device categories, and top-performing links.
+
+Linklytics was developed to strengthen my understanding of full-stack web development, REST APIs, database management, authentication, application security, automated testing, and deployment.
+
+---
 
 ## 🚀 Live Demo
 
 **Try Linklytics here:** [Linklytics — URL Shortening & Analytics Platform](https://linklytics-url-shortening-analytics.onrender.com)
 
-Explore the application to experience its URL shortening, link management, and analytics features.
+Explore the live application to experience URL shortening, link management, user authentication, and analytics features.
 
-## Features
+> **Note:** The live application may take a little time to start after a period of inactivity, depending on the hosting service.
+
+---
+
+## ✨ Features
 
 ### Accounts and private workspaces
 - Register, sign in, and sign out.
@@ -31,88 +43,300 @@ Explore the application to experience its URL shortening, link management, and a
 - Daily click trends, referrers, device category, top links, and an approximate unique-visitor count based on a keyed IP/User-Agent hash.
 - The visitor count is an estimate, not a verified count of people. Update/rotate `SECRET_KEY` to invalidate old fingerprints.
 
-## Run locally on Windows
+---
 
-1. Install Python 3.10+.
-2. Extract the ZIP and open the folder in VS Code.
-3. In the VS Code terminal:
+## 🛠️ Technologies Used
 
-   ```powershell
-   py -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   python -m pip install --upgrade pip
-   pip install -r requirements.txt
-   python app.py
-   ```
+| Technology | Purpose |
+|---|---|
+| Python | Core application logic |
+| Flask | Web framework and API development |
+| SQLite | Database management |
+| HTML5 | Web page structure |
+| CSS3 | Styling and dashboard layout |
+| JavaScript | Frontend interactions |
+| Werkzeug | Password hashing and security utilities |
+| Pytest | Automated testing |
+| Gunicorn | Production WSGI server |
+| Render | Web application deployment |
+| Git & GitHub | Version control and source code hosting |
 
-4. Open http://127.0.0.1:5000 and create an account. The new database starts without sample/demo links.
+---
 
-If PowerShell blocks activation, use Command Prompt and run `.venv\Scripts\activate.bat`.
+## 🧩 Core Components
 
-## Run tests
+### 1. User Authentication
+
+Handles account creation and authentication.
+
+**Responsibilities:**
+
+- Register new users
+- Authenticate existing users
+- Securely hash passwords
+- Manage user sessions
+- Protect private user data
+- Validate requests using CSRF tokens
+
+### 2. URL Management
+
+Manages the creation and maintenance of shortened links.
+
+**Responsibilities:**
+
+- Generate unique short URLs
+- Support custom aliases
+- Redirect users to original destinations
+- Pause or resume links
+- Copy and delete links
+- Export link information
+
+### 3. Analytics Dashboard
+
+Collects and presents link engagement statistics.
+
+**Responsibilities:**
+
+- Track link clicks
+- Display daily click trends
+- Analyze referring sources
+- Categorize devices
+- Identify top-performing links
+- Filter analytics by date range
+
+The unique-visitor figure is an estimate based on a privacy-conscious combination of request information, not a verified count of individual people.
+
+### 4. Database Management
+
+Uses SQLite to store application data and maintain relationships between users, links, and analytics.
+
+**Responsibilities:**
+
+- Store user account information
+- Maintain shortened URL records
+- Associate links with their owners
+- Store click and analytics information
+- Apply supported schema upgrades
+
+### 5. Security and Validation
+
+Includes several safeguards for a public-facing URL-shortening application.
+
+**Implemented safeguards include:**
+
+- Password hashing
+- Session cookie security settings
+- CSRF validation for state-changing API requests
+- Owner-based access restrictions
+- Validation of destination URLs
+- Basic request rate limiting
+- Security response headers
+- Request body size limits
+
+These safeguards provide a foundation for the project; they do not replace a comprehensive production security review.
+
+---
+
+## 🔐 Application Security
+
+Linklytics incorporates security practices intended to protect user accounts and prevent common URL-shortening abuses.
+
+- Passwords are stored using secure password hashing rather than plain text.
+- Users can access and manage only their own links.
+- Destination URLs are validated before being accepted and redirected to.
+- Localhost and private IP destinations are restricted by the application's validation rules.
+- State-changing API requests require CSRF token validation.
+- Basic rate limits help restrict excessive requests.
+- Session cookies use appropriate security settings for the deployment environment.
+
+---
+
+## 🔌 API Overview
+
+The application provides API endpoints for authentication, link management, analytics, custom domains, billing, and health checks.
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/api/auth/register` | Register a user |
+| POST | `/api/auth/login` | Authenticate a user |
+| POST | `/api/auth/logout` | Sign out |
+| GET | `/api/auth/me` | Retrieve the current user's session information |
+| GET / POST | `/api/links` | List or create shortened links |
+| GET | `/api/links/<id>` | Retrieve a link |
+| PATCH / DELETE | `/api/links/<id>` | Update or delete a link |
+| GET | `/api/analytics?start=YYYY-MM-DD&end=YYYY-MM-DD` | Retrieve analytics for a date range |
+| GET / POST | `/api/domains` | List or register custom domains |
+| POST | `/api/domains/<id>/verify` | Verify a custom domain |
+| DELETE | `/api/domains/<id>` | Remove a custom domain |
+| GET | `/api/billing` | Retrieve billing information |
+| POST | `/api/billing/checkout` | Initiate a billing checkout |
+| GET | `/api/health` | Check application health |
+
+**Note:** State-changing API requests require the appropriate session CSRF token in the `X-CSRF-Token` header.
+
+---
+
+## 💻 How to Run Locally
+
+### Prerequisites
+
+Install the following before running the project:
+
+- Python 3.10 or newer
+- Visual Studio Code or another code editor
+- Git (optional, for cloning the repository)
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/uzaam07/Linklytics-URL-Shortening-Analytics-Platform.git
+```
+
+### 2. Open the Project
+
+```bash
+cd Linklytics-URL-Shortening-Analytics-Platform
+```
+
+Open the folder in Visual Studio Code.
+
+### 3. Create a Virtual Environment
+
+**Windows — PowerShell**
 
 ```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+If PowerShell blocks activation, use Command Prompt:
+
+```bat
+.venv\Scripts\activate.bat
+```
+
+### 4. Install Dependencies
+
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 5. Configure Environment Variables
+
+For local development, configure a suitable `SECRET_KEY` using your environment or a local environment file if your application supports it.
+
+Never upload secret keys, credentials, or `.env` files to GitHub.
+
+### 6. Run the Application
+
+```bash
+python app.py
+```
+
+### 7. Open the Application
+
+Visit the following address in your browser:
+
+```text
+http://127.0.0.1:5000
+```
+
+Create an account to begin using the application.
+
+---
+
+## 🧪 Running Automated Tests
+
+Linklytics includes automated tests for important application functionality.
+
+Run the test suite with:
+
+```bash
 python -m pytest -q
 ```
 
-Tests cover registration, private workspaces, alias creation, redirects, analytics date ranges, CSRF enforcement, unsafe destinations, and custom-domain registration.
+The tests cover areas such as:
 
-## Production deployment
+- User registration and authentication
+- User workspace isolation
+- Short URL creation
+- URL redirects
+- Analytics date ranges
+- CSRF protection
+- Unsafe destination validation
+- Custom-domain registration
 
-- A Render blueprint is provided in `render.yaml`; review it before deploying and ensure the persistent disk is attached to the service.
-- `wsgi.py` and `Procfile` support a WSGI server such as Gunicorn (`gunicorn wsgi:app`).
-- Set a strong `SECRET_KEY`; use HTTPS and a trusted reverse proxy.
-- SQLite is suitable for a low-traffic portfolio deployment. For larger multi-instance production, migrate to PostgreSQL and use a shared rate-limit store such as Redis.
-- The included in-memory rate limiter is per process and resets on restart. Replace it with Redis-backed rate limiting for multiple workers/instances.
-- Basic hostname validation does not replace a commercial URL reputation/phishing feed or a robust DNS-rebinding/egress policy. For public use, add reputation checks, abuse reporting, email verification, account recovery, audit logs, monitoring, backups, privacy/retention controls, and DNS/domain ownership verification procedures.
-- Custom domain TXT verification is implemented, but automatic TLS certificate issuance and reverse-proxy routing are infrastructure responsibilities.
-- Do not use Flask's development server or debug mode in production.
+Automated testing helps verify application behavior and catch regressions during development.
 
-## Database migrations
+---
 
-The app uses `schema_migrations` and applies additive schema upgrades at startup so existing local SQLite databases can be upgraded without manually deleting them. Keep backups before production migrations. For a larger product, move to Alembic/Flask-Migrate and a migration review process.
+## ☁️ Deployment
 
-## API overview
+Linklytics is deployed using Render.
 
-- `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
-- `GET/POST /api/links`, `GET /api/links/<id>`, `PATCH/DELETE /api/links/<id>`
-- `GET /api/analytics?start=YYYY-MM-DD&end=YYYY-MM-DD`
-- `GET/POST /api/domains`, `POST /api/domains/<id>/verify`, `DELETE /api/domains/<id>`
-- `GET /api/billing`, `POST /api/billing/checkout`
-- `GET /api/health`
+**Live application:** [https://linklytics-url-shortening-analytics.onrender.com](https://linklytics-url-shortening-analytics.onrender.com)
 
-State-changing API requests require the session's `X-CSRF-Token` header.
+Typical deployment configuration:
 
-## Added production integrations
+| Setting | Value |
+|---|---|
+| Build Command | `pip install -r requirements.txt` |
+| Start Command | `gunicorn wsgi:app` |
+| Environment | Python |
+| Application Framework | Flask |
 
-### Stripe subscriptions (test mode first)
+Configure a strong `SECRET_KEY` in the hosting provider's environment settings. Review the project's deployment configuration before deploying, and ensure the application has persistent storage configured for its SQLite database.
 
-1. Create a recurring product/Price in the Stripe Dashboard.
-2. Install the updated dependencies with `pip install -r requirements.txt`.
-3. Set `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`, and `PUBLIC_BASE_URL` in the deployment environment. Keep all secret keys server-side and never commit them.
-4. In Stripe Workbench / Developers, create a webhook pointing to `https://YOUR-DOMAIN/api/billing/webhook`. Subscribe to `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, and `invoice.payment_failed`.
-5. Copy the webhook signing secret into `STRIPE_WEBHOOK_SECRET`. Test the entire subscription lifecycle in Stripe test mode before switching to live keys.
-6. The Settings billing button opens hosted Stripe Checkout when configured. The signed webhook is the authority for subscription state; never change a user's plan from a client-side success redirect.
+**Database note:** SQLite data may not survive restarts or redeployments if it is stored on an ephemeral filesystem. Persistent storage or a migration to a managed database such as PostgreSQL is recommended for reliable long-term data retention.
 
-### Redis-backed rate limiting
+---
 
-Set `REDIS_URL` to a private Redis instance in multi-worker deployments. When configured, the app uses Redis counters shared between workers. In production, an unavailable configured Redis limiter fails closed with HTTP 429. If `REDIS_URL` is blank, the app uses an in-process limiter for local development only. Do not expose Redis publicly.
+## 📈 Future Improvements
 
-### Custom-domain TLS with Caddy
+Potential enhancements for future versions include:
 
-1. Add a custom domain in Settings and create the displayed TXT record at `_linklytics.YOUR-DOMAIN`.
-2. Verify the TXT record in the dashboard.
-3. Point the domain's A/AAAA record to the Caddy host (or configure an appropriate CNAME).
-4. Install Caddy on the proxy host, adapt `Caddyfile.example`, and set `TRUST_PROXY=1` for the Flask service. Caddy's on-demand TLS `ask` endpoint checks that the requested hostname is verified before issuing a certificate.
-5. Restrict access to the Flask port so public traffic goes through the trusted proxy. Confirm the DNS provider and hosting platform support the routing you configure.
+- Email Verification and Password Recovery
+- Two-Factor Authentication
+- QR Code Generation for Shortened URLs
+- Advanced Analytics and Interactive Charts
+- Link Expiration and Scheduling
+- Bulk URL Shortening
+- Enhanced Search and Filtering
+- PostgreSQL Database Integration
+- Redis-Based Rate Limiting
+- Improved Monitoring and Logging
+- Custom Domain and HTTPS Automation
+- Subscription and Billing Workflow Enhancements
+- Automated Deployment and Continuous Integration
+- Additional Security and Abuse-Prevention Integrations
 
-Caddy on-demand TLS configuration is an example and must be reviewed for your infrastructure. Certificate issuance has rate limits; test with staging/non-production domains first. A verified TXT record alone does not point DNS at your server.
+---
 
-### Production readiness checklist
+## 🎯 Learning Outcomes
 
-- Use a strong unique `SECRET_KEY`; set `FLASK_ENV=production`, `TRUST_PROXY=1` only behind a trusted proxy, and enforce HTTPS.
-- Configure Redis and monitor its health if using multiple workers.
-- Back up persistent data and test restores. SQLite remains intended for a small single-instance deployment; migrate to PostgreSQL before horizontal scaling.
-- Configure Stripe webhooks and verify events in test mode before accepting live payments.
-- Add transactional email, email verification, password reset, account deletion, audit logging, alerting, abuse-reporting and URL reputation integrations before public launch. These workflows are not represented as complete by this starter.
-- Review privacy/retention rules for visitor fingerprints and click logs; the unique-visitor metric is an estimate.
+Through this project, I gained practical experience with:
+
+- Python and Flask web development
+- REST API design and implementation
+- User authentication and session management
+- Password hashing and CSRF protection
+- Relational database design using SQLite
+- Frontend development with HTML, CSS, and JavaScript
+- URL validation and redirect handling
+- Analytics data collection and presentation
+- Automated testing with Pytest
+- Environment configuration and deployment
+- Version control using Git and GitHub
+- Debugging and improving application reliability
+
+---
+
+## 👨‍💻 Author
+
+- **Name:** Uzaam Shaad K
+- **GitHub:** [uzaam07](https://github.com/uzaam07)
+- **Portfolio:** [uzaam07.github.io](https://uzaam07.github.io/Portfolio/)
+- **LinkedIn:** [linkedin.com/in/uzaamshaad](https://linkedin.com/in/uzaamshaad)
+
+---
