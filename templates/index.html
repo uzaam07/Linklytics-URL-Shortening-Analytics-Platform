@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050505">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>Linklytics — Link Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="/" aria-label="Linklytics home">
+      <span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13.5a4.5 4.5 0 0 0 6.36 0l3-3A4.5 4.5 0 0 0 13 4.14l-1.72 1.72"/><path d="M14 10.5a4.5 4.5 0 0 0-6.36 0l-3 3A4.5 4.5 0 0 0 11 19.86l1.72-1.72"/></svg></span>
+      <span>linklytics<span class="brand-dot">.</span></span>
+    </a>
+    <div class="workspace-label">WORKSPACE</div>
+    <button class="workspace-switch"><span class="workspace-avatar">U</span><span class="workspace-copy"><strong id="workspaceName">{{ user.name if user else 'My workspace' }}</strong><small id="workspacePlan">{{ (user.plan if user else 'free')|upper }} PLAN</small></span><span class="chevron">⌄</span></button>
+    <div class="nav-label">MENU</div>
+    <nav class="nav-menu">
+      <button class="nav-item active" data-section="overview"><span class="nav-icon">▦</span> Overview</button>
+      <button class="nav-item" data-section="links"><span class="nav-icon">↗</span> All links <span class="nav-count" id="navLinkCount">0</span></button>
+      <button class="nav-item" data-section="analytics"><span class="nav-icon">⌁</span> Analytics</button>
+      <button class="nav-item" data-section="settings"><span class="nav-icon">⚙</span> Settings</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="plan-card">
+        <div class="plan-top"><span class="plan-icon">✦</span><span id="planName">FREE PLAN</span></div>
+        <strong>Make every click count.</strong>
+        <p>You're building smarter links. Keep growing with clear insights.</p>
+        <div class="plan-meter"><span></span></div>
+        <div class="plan-foot"><span id="planUsage">0 links created</span><span>Starter</span></div>
+        <button class="upgrade-btn" id="upgradeBtn">Explore Pro <span>↗</span></button>
+      </div>
+      <button class="profile-button" id="logoutBtn" title="Sign out"><span class="profile-avatar">{{ (user.name[:2] if user else 'LL')|upper }}</span><span class="profile-copy"><strong id="profileName">{{ user.name if user else 'Linklytics user' }}</strong><small id="profileEmail">{{ user.email if user else 'Personal workspace' }}</small></span><span class="more">↪</span></button>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <header class="topbar">
+      <button class="mobile-menu" id="mobileMenu" aria-label="Toggle menu">☰</button>
+      <div class="breadcrumb">Workspace <span>/</span> <strong id="breadcrumbTitle">Overview</strong></div>
+      <div class="top-actions">
+        <span class="status-pill"><i></i> All systems operational</span>
+        <button class="icon-button" id="refreshBtn" title="Refresh dashboard" aria-label="Refresh">↻</button>
+        <button class="help-button" id="helpBtn">? <span>Help</span></button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="page-heading">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> MONDAY, YOUR LINKS ARE LOOKING GOOD</div>
+          <h1>Good afternoon, Uzaam <span class="wave">✳</span></h1>
+          <p class="subheading">Here's what's happening with your links today.</p>
+        </div>
+        <button class="primary-button" id="openCreate"><span class="plus">＋</span> Create new link</button>
+      </section>
+
+      <section class="stats-grid" aria-label="Key metrics">
+        <article class="stat-card">
+          <div class="stat-head"><span>Total clicks</span><span class="stat-icon purple">↗</span></div>
+          <div class="stat-value" id="totalClicks">—</div>
+          <div class="stat-foot"><span class="trend positive">↗ Live count</span><span>Across all links</span></div>
+          <div class="sparkline spark-purple"><svg viewBox="0 0 150 38" preserveAspectRatio="none"><path d="M0 31 C12 27 17 32 28 20 S46 29 57 17 S74 23 88 12 S110 19 122 7 S138 11 150 2" /></svg></div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-head"><span>Links created</span><span class="stat-icon blue">⌁</span></div>
+          <div class="stat-value" id="totalLinks">—</div>
+          <div class="stat-foot"><span class="trend neutral">↗ Your library</span><span>All time</span></div>
+          <div class="sparkline spark-blue"><svg viewBox="0 0 150 38" preserveAspectRatio="none"><path d="M0 30 C15 30 17 20 30 25 S46 17 60 21 S79 12 91 17 S111 6 124 11 S140 6 150 2" /></svg></div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-head"><span>Clicks today</span><span class="stat-icon green">◷</span></div>
+          <div class="stat-value" id="todayClicks">—</div>
+          <div class="stat-foot"><span class="trend positive">↗ Today's activity</span><span>UTC day</span></div>
+          <div class="sparkline spark-green"><svg viewBox="0 0 150 38" preserveAspectRatio="none"><path d="M0 32 C14 24 19 30 33 18 S49 23 63 15 S81 21 94 10 S112 15 126 8 S140 8 150 2" /></svg></div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-head"><span>Active links</span><span class="stat-icon orange">◉</span></div>
+          <div class="stat-value" id="activeLinks">—</div>
+          <div class="stat-foot"><span class="trend neutral">● Ready to share</span><span>Currently enabled</span></div>
+          <div class="sparkline spark-orange"><svg viewBox="0 0 150 38" preserveAspectRatio="none"><path d="M0 28 C14 30 20 18 34 24 S50 13 64 19 S82 12 97 15 S115 6 128 10 S141 4 150 2" /></svg></div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div><h2>Click performance</h2><p>Understand how your audience engages over time.</p></div>
+            <div class="chart-legend"><span></span> Total clicks <button class="range-select" id="rangeSelect">Last 7 days⌄</button></div>
+          </div>
+          <div class="chart-summary"><strong id="chartTotal">—</strong><span> clicks in the last 7 days</span></div>
+          <div class="chart-wrap"><div class="y-labels"><span>Max</span><span>75%</span><span>50%</span><span>25%</span><span>0</span></div><div class="chart-canvas" id="chartCanvas"><div class="chart-gridlines"><i></i><i></i><i></i><i></i><i></i></div><div class="bars" id="chartBars"></div></div></div>
+          <div class="chart-xlabels" id="chartLabels"></div>
+        </article>
+        <article class="panel sources-panel">
+          <div class="panel-heading"><div><h2>Top referrers</h2><p>Where your clicks come from.</p></div><button class="dots-button" aria-label="More options">•••</button></div>
+          <div class="source-list" id="sourceList"><div class="loading-line"></div></div>
+          <div class="panel-bottom-note"><span class="tiny-check">✓</span> Referrers are recorded when available</div>
+        </article>
+      </section>
+
+      <section class="panel links-panel" id="linksPanel">
+        <div class="panel-heading links-heading">
+          <div><h2>Your links <span class="count-badge" id="linkCountBadge">0</span></h2><p>Manage and monitor your shortened URLs.</p></div>
+          <div class="link-tools"><label class="search-box"><span>⌕</span><input type="search" id="linkSearch" placeholder="Search links..." aria-label="Search links"></label><button class="secondary-button" id="exportBtn">⇩ <span>Export</span></button><button class="secondary-button filter-button" id="filterBtn">☷ <span>Filter</span></button></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>LINK / DESTINATION</th><th>CLICKS</th><th>CREATED</th><th>STATUS</th><th></th></tr></thead>
+            <tbody id="linksTable"><tr><td colspan="5" class="table-loading">Loading your links...</td></tr></tbody>
+          </table>
+        </div>
+        <div class="table-footer"><span id="tableSummary">Loading links...</span><div class="pagination"><button disabled>‹</button><button class="current-page">1</button><button disabled>›</button></div></div>
+      </section>
+      <section class="panel settings-panel" id="settingsPanel" style="margin-top:18px;padding:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px">
+        <div><div class="panel-heading"><div><h2>Usage & plan</h2><p>Monitor your workspace limits.</p></div></div><div id="billingUsage" class="empty-inline">Loading plan usage…</div><button class="secondary-button" id="billingBtn" style="margin-top:12px">View plan / Upgrade</button><p class="field-hint">When Stripe is configured, this opens hosted checkout. Never enable live payments before configuring and testing webhooks.</p></div>
+        <div><div class="panel-heading"><div><h2>Custom domains</h2><p>Prepare a branded short-link domain.</p></div></div><form id="domainForm" style="display:flex;gap:8px;margin:12px 0"><input id="domainInput" type="text" placeholder="links.example.com" required style="flex:1;min-width:0;background:#111;border:1px solid #303030;border-radius:8px;color:#fff;padding:10px"><button class="secondary-button" type="submit">Add</button></form><div id="domainList" class="empty-inline">Loading domains…</div><p class="field-hint">Add the verification TXT record, verify it, then configure the Caddy on-demand TLS proxy from Caddyfile.example.</p></div>
+      </section>
+      <footer class="footer"><span>© 2026 Linklytics</span><span>Built for the curious. <b>✳</b></span><span><a href="#" id="privacyLink">Privacy</a> · <a href="#" id="docsLink">Docs</a></span></footer>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="createModal" aria-hidden="true">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" data-close="createModal" aria-label="Close">×</button>
+    <div class="modal-symbol">↗</div><div class="modal-kicker">NEW SHORT LINK</div>
+    <h2 id="modalTitle">Make your link go further.</h2><p class="modal-description">Create a clean, shareable link and start learning from every click.</p>
+    <form id="createForm">
+      <label for="destination">Destination URL</label><input id="destination" type="url" placeholder="https://yourwebsite.com/page" required>
+      <label for="linkTitle">Link name <span>(optional)</span></label><input id="linkTitle" type="text" maxlength="80" placeholder="e.g. Product launch campaign">
+      <label for="customAlias">Custom alias <span>(optional)</span></label><div class="alias-input"><span id="baseUrl">localhost:5000/</span><input id="customAlias" type="text" maxlength="24" placeholder="my-link" pattern="[A-Za-z0-9_-]{3,24}"></div>
+      <p class="field-hint">3–24 characters: letters, numbers, underscores, or hyphens.</p>
+      <div class="form-error" id="formError" role="alert"></div>
+      <button class="primary-button modal-submit" type="submit" id="submitLink">Create short link <span>→</span></button>
+    </form>
+  </section>
+</div>
+
+<div class="modal-backdrop" id="detailModal" aria-hidden="true">
+  <section class="modal detail-modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <button class="modal-close" data-close="detailModal" aria-label="Close">×</button>
+    <div class="modal-kicker">LINK ANALYTICS</div><h2 id="detailTitle">Link performance</h2><p class="modal-description" id="detailUrl"></p>
+    <div class="detail-stat"><span>Total clicks</span><strong id="detailClicks">0</strong></div>
+    <h3>Last 7 days</h3><div class="detail-bars" id="detailBars"></div>
+    <h3>Referrers</h3><div id="detailRefs" class="detail-refs"></div>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

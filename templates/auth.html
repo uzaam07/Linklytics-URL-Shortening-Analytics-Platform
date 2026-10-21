@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050505"><meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>Sign in — Linklytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    body.auth-page{min-height:100vh;display:grid;place-items:center;background:#050505;padding:24px;color:#f5f5f5}
+    .auth-wrap{width:min(100%,440px)}.auth-brand{display:flex;align-items:center;justify-content:center;gap:12px;font:700 25px 'Space Grotesk',sans-serif;margin-bottom:32px;letter-spacing:-1px}
+    .auth-brand-mark{width:43px;height:43px;border-radius:13px;background:linear-gradient(140deg,#f4f4f4,#777);display:grid;place-items:center;color:#050505;font-size:25px}
+    .auth-card{background:#0b0b0b;border:1px solid #282828;border-radius:20px;padding:34px;box-shadow:0 30px 100px #0008}
+    .auth-kicker{font-size:10px;letter-spacing:2px;color:#bdbdbd;font-weight:700}.auth-card h1{font:600 30px 'Space Grotesk',sans-serif;margin:10px 0}.auth-sub{color:#929292;font-size:13px;line-height:1.7;margin-bottom:25px}
+    .auth-card label{display:block;font-size:12px;font-weight:600;color:#d8d8d8;margin:15px 0 7px}.auth-card input{width:100%;height:45px;background:#111;border:1px solid #303030;border-radius:9px;padding:0 13px;color:white;outline:0}.auth-card input:focus{border-color:#aaa;box-shadow:0 0 0 3px #ffffff12}
+    .auth-submit{width:100%;justify-content:center;margin-top:22px;height:45px}.auth-switch{text-align:center;color:#929292;font-size:12px;margin:20px 0 0}.auth-switch button{border:0;background:transparent;color:#fff;text-decoration:underline;cursor:pointer;font-weight:600}.auth-error{min-height:18px;color:#ff9da4;font-size:12px;margin-top:10px}.auth-foot{text-align:center;color:#626262;font-size:11px;margin-top:20px;line-height:1.6}
+    @media(max-width:500px){.auth-card{padding:25px 20px}.auth-card h1{font-size:26px}}
+  </style>
+</head>
+<body class="auth-page">
+  <main class="auth-wrap">
+    <div class="auth-brand"><span class="auth-brand-mark">↗</span><span>linklytics<span style="color:#d8d8d8">.</span></span></div>
+    <section class="auth-card">
+      <div class="auth-kicker" id="authKicker">YOUR LINKS, YOUR INSIGHTS</div>
+      <h1 id="authTitle">Welcome back.</h1><p class="auth-sub" id="authSub">Sign in to your private workspace and continue tracking what matters.</p>
+      <form id="authForm">
+        <div id="nameField" hidden><label for="authName">Your name</label><input id="authName" autocomplete="name" maxlength="80" placeholder="Your name"></div>
+        <label for="authEmail">Email address</label><input id="authEmail" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com">
+        <label for="authPassword">Password</label><input id="authPassword" type="password" autocomplete="current-password" required minlength="10" maxlength="128" placeholder="At least 10 characters">
+        <div class="auth-error" id="authError" role="alert"></div>
+        <button class="primary-button auth-submit" id="authSubmit" type="submit">Sign in <span>→</span></button>
+      </form>
+      <p class="auth-switch"><span id="switchText">New to Linklytics?</span> <button type="button" id="switchMode">Create an account</button></p>
+    </section>
+    <p class="auth-foot">Black-box simple link analytics.<br>Use a unique password. This local MVP does not send email verification.</p>
+  </main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id); let mode = 'login';
+  const token = () => document.querySelector('meta[name="csrf-token"]').content;
+  function renderMode(){const signup=mode==='register';$('nameField').hidden=!signup;$('authKicker').textContent=signup?'START YOUR WORKSPACE':'YOUR LINKS, YOUR INSIGHTS';$('authTitle').textContent=signup?'Create your account.':'Welcome back.';$('authSub').textContent=signup?'Create a private workspace to manage links and measure engagement.':'Sign in to your private workspace and continue tracking what matters.';$('authPassword').autocomplete=signup?'new-password':'current-password';$('authPassword').minLength=signup?10:1;$('authSubmit').innerHTML=signup?'Create account <span>→</span>':'Sign in <span>→</span>';$('switchText').textContent=signup?'Already have an account?':'New to Linklytics?';$('switchMode').textContent=signup?'Sign in':'Create an account';$('authError').textContent='';}
+  $('switchMode').addEventListener('click',()=>{mode=mode==='login'?'register':'login';renderMode();});
+  $('authForm').addEventListener('submit',async e=>{e.preventDefault();$('authSubmit').disabled=true;$('authError').textContent='';try{const res=await fetch('/api/auth/'+mode,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':token()},body:JSON.stringify({name:$('authName').value,email:$('authEmail').value,password:$('authPassword').value})});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||'Unable to continue.');location.href='/';}catch(err){$('authError').textContent=err.message;}finally{$('authSubmit').disabled=false;}});
+})();
+</script>
+</body></html>
